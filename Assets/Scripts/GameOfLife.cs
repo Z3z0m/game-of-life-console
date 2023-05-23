@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class GameOfLife : MonoBehaviour
 {
+    [SerializeField] bool CPU;
     [SerializeField] int width;
     [SerializeField] int height;
     [SerializeField] float cellSize = 1f;
@@ -16,7 +19,11 @@ public class GameOfLife : MonoBehaviour
     [SerializeField] bool[,] initialCells;
 
     private float timer;
+    [SerializeField] TextMeshProUGUI text;
+    private int runs;
 
+////////////////////////////////////////////////////////////////////////////////////////////
+    public ComputeShader gameOfLifeGPU;
 
     private void Start()
     {
@@ -26,13 +33,17 @@ public class GameOfLife : MonoBehaviour
 
     private void Update()
     {
-        timer += Time.deltaTime;
-
-        if (timer >= updateInterval)
+        if(CPU)
         {
-            UpdateGrid();
-            UpdateCells();
-            timer = 0f;
+            timer += Time.deltaTime;
+
+            if (timer >= updateInterval)
+            {
+                UpdateGrid();
+                UpdateCells();
+                UpdateUI();
+                timer = 0f;
+            }
         }
     }
 
@@ -155,5 +166,10 @@ public class GameOfLife : MonoBehaviour
                 cells[x, y].GetComponent<Renderer>().material.color = grid[x, y] ? Color.black : Color.white;
             }
         }
+    }
+    private void UpdateUI()
+    {
+        runs++;
+        text.GetComponentInChildren<TMP_Text>().text = runs.ToString();
     }
 }
