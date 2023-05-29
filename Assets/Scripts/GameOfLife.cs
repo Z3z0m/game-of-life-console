@@ -9,7 +9,7 @@ public class GameOfLife : MonoBehaviour
     [SerializeField] bool CPU;
     [SerializeField] int width;
     [SerializeField] int height;
-    [SerializeField] float cellSize = 1f;
+    [SerializeField] float cellSize;
     [SerializeField] float updateInterval = 1f;
 
     private bool[,] grid;
@@ -28,13 +28,30 @@ public class GameOfLife : MonoBehaviour
     private void Start()
     {
         SetCubeSizeByScreenSize();
+        // cellSize = Mathf.Min(10 / width, 10 / height);
         InitializeGrid();
         CreateCells();
 
     }
     private void SetCubeSizeByScreenSize()
     {
+        cellSize = Mathf.Min(10 / (float)width, 10 / (float)height);
+        // float aspectRatio = 10f / 10f;  // Valor fixo para a proporção 10:10
+        // float calculatedCellSize = cellSize;
+        
 
+        // if (width > height * aspectRatio)
+        // {
+        //     calculatedCellSize = height / (float)width;
+            
+        // }
+        // else
+        // {
+        //     calculatedCellSize = width / (float)height * aspectRatio;
+            
+        // }
+        // print(calculatedCellSize);
+        // cellSize = calculatedCellSize;
     }
     private void Update()
     {
