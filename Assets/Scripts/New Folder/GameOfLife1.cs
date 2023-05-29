@@ -105,27 +105,27 @@ public class GameOfLife1 : MonoBehaviour
     }
 
     private void UpdateCells()
+{
+    RenderTexture.active = renderTexture;
+
+    Texture2D texture = new Texture2D(width, height, TextureFormat.RFloat, false);
+    texture.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+    texture.Apply();
+
+    Color[] pixels = texture.GetPixels();
+
+    for (int x = 0; x < width; x++)
     {
-        RenderTexture.active = renderTexture;
-
-        Texture2D texture = new Texture2D(width, height, TextureFormat.RFloat, false);
-        texture.ReadPixels(new Rect(0, 0, width, height), 0, 0);
-        texture.Apply();
-
-        Color[] pixels = texture.GetPixels();
-
-        for (int x = 0; x < width; x++)
+        for (int y = 0; y < height; y++)
         {
-            for (int y = 0; y < height; y++)
-            {
-                int index = y * width + x;
-                grid[x, y] = pixels[index].r == 1f;
-                cells[x, y].GetComponent<Renderer>().material.color = grid[x, y] ? Color.black : Color.white;
-            }
+            int index = y * width + x;
+            grid[x, y] = pixels[index].r == 1f;
+            cells[x, y].GetComponent<Renderer>().material.color = grid[x, y] ? Color.black : Color.white;
         }
-
-        RenderTexture.active = null;
-        Destroy(texture);
     }
+
+    RenderTexture.active = null;
+    Destroy(texture);
+}
 
 }
