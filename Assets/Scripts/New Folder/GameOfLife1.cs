@@ -9,13 +9,14 @@ public class GameOfLife1 : MonoBehaviour
     public int width = 16;
     public int height = 9;
     public float cellSize = 1f;
+    public GameObject cellExemple;
     public bool[,] initialCells;
 
     public ComputeShader gameOfLifeComputeShader;
 
-    private bool[,] grid;
-    private bool[,] nextGrid;
-    private GameObject[,] cells;
+    public bool[,] grid;
+    public bool[,] nextGrid;
+    public GameObject[,] cells;
     private RenderTexture renderTexture;
 
     private float timer, timeLimit;
@@ -78,6 +79,7 @@ public class GameOfLife1 : MonoBehaviour
             for (int y = 0; y < height; y++)
             {
                 GameObject cell = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                cell.AddComponent<ClickRecognizer>();
                 cell.transform.position = new Vector3(x * cellSize, 0f, y * cellSize);
                 cell.transform.localScale = new Vector3(cellSize, cellSize, cellSize);
                 cell.GetComponent<Renderer>().material.color = grid[x, y] ? Color.black : Color.white;

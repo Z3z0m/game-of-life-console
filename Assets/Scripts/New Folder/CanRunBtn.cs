@@ -7,7 +7,8 @@ public class CanRunBtn : MonoBehaviour
     // Start is called before the first frame update
    public void btn()
    {
-     FindObjectOfType<GameOfLife1>().CanRun = true;
+     FindObjectOfType<GameOfLife>().CanRun = true;
+     FindObjectOfType<GameOfLife>().updateAlive();
      gameObject.SetActive(false);
    }
 }

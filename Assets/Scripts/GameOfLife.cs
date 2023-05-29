@@ -11,55 +11,68 @@ public class GameOfLife : MonoBehaviour
     [SerializeField] int height;
     [SerializeField] float cellSize = 1f;
     [SerializeField] float updateInterval = 1f;
-    [SerializeField] bool startAleatorio;
 
     private bool[,] grid;
     private bool[,] nextGrid;
     private GameObject[,] cells;
     [SerializeField] bool[,] initialCells;
 
-    private float timer;
+    private float timer, timeLimit = 10f;
+    public bool CanRun, randomStart = false;
     [SerializeField] TextMeshProUGUI text;
-    private int runs;
+    public int runs;
 
 ////////////////////////////////////////////////////////////////////////////////////////////
     public ComputeShader gameOfLifeGPU;
 
     private void Start()
     {
+        SetCubeSizeByScreenSize();
         InitializeGrid();
         CreateCells();
-    }
 
+    }
+    private void SetCubeSizeByScreenSize()
+    {
+
+    }
     private void Update()
     {
         if(CPU)
         {
-            timer += Time.deltaTime;
-
-            if (timer >= updateInterval)
+            
+            if (CanRun && timer <= timeLimit)
             {
+                timer += Time.deltaTime;
                 UpdateGrid();
                 UpdateCells();
                 UpdateUI();
-                timer = 0f;
             }
+        //     timer += Time.deltaTime;
+        //     if (timer >= updateInterval && CanRun == true)
+        //     {
+        //         updateAlive();
+        //         UpdateGrid();
+        //         UpdateCells();
+        //         UpdateUI();
+        //         timer = 0f;
+        //     }
         }
     }
 
-    private void InitializeGrid()
+     private void InitializeGrid()
     {
         grid = new bool[width, height];
         nextGrid = new bool[width, height];
 
-        // Inicialize a grade com células vivas ou mortas aleatoriamente
-        if(startAleatorio)
+        if (randomStart == false)
         {
+            
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
-                    grid[x, y] = Random.Range(0, 2) == 1;
+                    grid[x, y] = false;
                 }
             }
         }
@@ -69,10 +82,28 @@ public class GameOfLife : MonoBehaviour
             {
                 for (int y = 0; y < height; y++)
                 {
-                    grid[x, y] = initialCells[x, y];
+                    grid[x, y] = Random.Range(0, 2) == 1;
                 }
             }
         }
+    }
+
+    public void updateAlive()
+    {
+        for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if(cells[x, y].GetComponent<Renderer>().material.color == Color.white)
+                    {
+                        grid[x, y] = false;
+                    }
+                    else if(cells[x, y].GetComponent<Renderer>().material.color == Color.black)
+                    {
+                        grid[x, y] = true;
+                    }
+                }
+            }
     }
 
     private void CreateCells()
@@ -85,6 +116,7 @@ public class GameOfLife : MonoBehaviour
             for (int y = 0; y < height; y++)
             {
                 GameObject cell = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                cell.AddComponent<ClickRecognizer>();
                 cell.transform.position = new Vector3(x * cellSize, 0f, y * cellSize);
                 cell.transform.localScale = new Vector3(cellSize, cellSize, cellSize);
                 cell.GetComponent<Renderer>().material.color = grid[x, y] ? Color.black : Color.white;
