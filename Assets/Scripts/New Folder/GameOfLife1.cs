@@ -9,7 +9,6 @@ public class GameOfLife1 : MonoBehaviour
     public int width = 16;
     public int height = 9;
     public float cellSize = 1f;
-    public float updateInterval = 1f;
     public bool[,] initialCells;
 
     public ComputeShader gameOfLifeComputeShader;
@@ -19,40 +18,42 @@ public class GameOfLife1 : MonoBehaviour
     private GameObject[,] cells;
     private RenderTexture renderTexture;
 
-    private float timer;
+    private float timer, timeLimit;
     private int kernelUpdateGrid;
-
+    public bool CanRun, randomStart = false;
     private void Start()
     {
         InitializeGrid();
         CreateCells();
-        InitializeComputeShader();
+        //InitializeComputeShader();
     }
 
     private void Update()
     {
-        timer += Time.deltaTime;
+        
 
-        if (timer >= updateInterval)
+        if (CanRun && timer >= timeLimit)
         {
+            timer += Time.deltaTime;
             UpdateGrid();
             UpdateCells();
-            timer = 0f;
         }
     }
 
+    
     private void InitializeGrid()
     {
         grid = new bool[width, height];
         nextGrid = new bool[width, height];
 
-        if (initialCells != null && initialCells.GetLength(0) == width && initialCells.GetLength(1) == height)
+        if (randomStart == false)
         {
+            
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
-                    grid[x, y] = initialCells[x, y];
+                    grid[x, y] = false;
                 }
             }
         }
@@ -105,27 +106,27 @@ public class GameOfLife1 : MonoBehaviour
     }
 
     private void UpdateCells()
-{
-    RenderTexture.active = renderTexture;
-
-    Texture2D texture = new Texture2D(width, height, TextureFormat.RFloat, false);
-    texture.ReadPixels(new Rect(0, 0, width, height), 0, 0);
-    texture.Apply();
-
-    Color[] pixels = texture.GetPixels();
-
-    for (int x = 0; x < width; x++)
     {
-        for (int y = 0; y < height; y++)
-        {
-            int index = y * width + x;
-            grid[x, y] = pixels[index].r == 1f;
-            cells[x, y].GetComponent<Renderer>().material.color = grid[x, y] ? Color.black : Color.white;
-        }
-    }
+        RenderTexture.active = renderTexture;
 
-    RenderTexture.active = null;
-    Destroy(texture);
-}
+        Texture2D texture = new Texture2D(width, height, TextureFormat.RFloat, false);
+        texture.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+        texture.Apply();
+
+        Color[] pixels = texture.GetPixels();
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                int index = y * width + x;
+                grid[x, y] = pixels[index].r == 1f;
+                cells[x, y].GetComponent<Renderer>().material.color = grid[x, y] ? Color.black : Color.white;
+            }
+        }
+
+        RenderTexture.active = null;
+        Destroy(texture);
+    }
 
 }
