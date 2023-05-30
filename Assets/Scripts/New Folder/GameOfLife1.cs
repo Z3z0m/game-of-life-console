@@ -9,7 +9,6 @@ public class GameOfLife1 : MonoBehaviour
     public int width = 16;
     public int height = 9;
     public float cellSize = 1f;
-    public GameObject cellExemple;
     public bool[,] initialCells;
 
     public ComputeShader gameOfLifeComputeShader;
@@ -17,26 +16,27 @@ public class GameOfLife1 : MonoBehaviour
     public bool[,] grid;
     public bool[,] nextGrid;
     public GameObject[,] cells;
-    private RenderTexture renderTexture;
+    [SerializeField] private RenderTexture renderTexture;
 
-    private float timer, timeLimit;
+    private float timer, timeLimit = 10f;
     private int kernelUpdateGrid;
     public bool CanRun, randomStart = false;
+
     private void Start()
     {
         InitializeGrid();
         CreateCells();
-        //InitializeComputeShader();
+        InitializeComputeShader();
     }
 
     private void Update()
     {
 
 
-        if (CanRun && timer >= timeLimit)
+        if (CanRun && timer <= timeLimit)
         {
             timer += Time.deltaTime;
-            UpdateGrid();
+            UpdateGrid(); // hhhhh
             UpdateCells();
         }
     }
@@ -98,20 +98,23 @@ public class GameOfLife1 : MonoBehaviour
         kernelUpdateGrid = gameOfLifeComputeShader.FindKernel("UpdateGrid");
         gameOfLifeComputeShader.SetInt("width", width);
         gameOfLifeComputeShader.SetInt("height", height);
-        gameOfLifeComputeShader.SetBuffer(kernelUpdateGrid, "grid", gridBuffer);
-        gameOfLifeComputeShader.SetBuffer(kernelUpdateGrid, "nextGrid", nextGridBuffer);
+        gameOfLifeComputeShader.SetBuffer(0, "grid", gridBuffer);
+        gameOfLifeComputeShader.SetBuffer(0, "nextGrid", nextGridBuffer);
 
-        gameOfLifeComputeShader.SetTexture(kernelUpdateGrid, "Result", renderTexture);
-        gameOfLifeComputeShader.Dispatch(kernelUpdateGrid, width / 8, height / 8, 1);
+        //gameOfLifeComputeShader.SetTexture(kernelUpdateGrid, "Result", renderTexture);
+        gameOfLifeComputeShader.Dispatch(0, width / 10, height / 10, 1);
 
         gridBuffer.Release();
         nextGridBuffer.Release();
+
+        gridBuffer.Dispose();
+        nextGridBuffer.Dispose();
     }
 
 
     private void UpdateGrid()
     {
-        gameOfLifeComputeShader.Dispatch(kernelUpdateGrid, width / 8, height / 8, 1);
+        gameOfLifeComputeShader.Dispatch(0, width / 10, height / 10, 1);
     }
 
     private void UpdateCells()
@@ -134,8 +137,8 @@ public class GameOfLife1 : MonoBehaviour
             }
         }
 
-        RenderTexture.active = null;
         Destroy(texture);
     }
+
 
 }

@@ -31,7 +31,7 @@ int CountLiveNeighbors(int x, int y)
     return count;
 }
 
-[numthreads(8, 8, 1)]
+[numthreads(10, 10, 1)]
 void UpdateGrid(uint3 id : SV_DispatchThreadID)
 {
     int x = id.x;
