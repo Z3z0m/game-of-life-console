@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.2846214, g: 0.37120992, b: 0.498806, a: 1}
+  m_IndirectSpecularColor: {r: 0.28461978, g: 0.37120783, b: 0.49880326, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -216,7 +216,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 89760207}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d023c42674e93fa4f94565be3df9e89c, type: 3}
   m_Name: 
@@ -271,18 +271,18 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 89760207}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 760166ccae427bf4c882788c63a00230, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 16
-  height: 9
+  width: 10
+  height: 10
   cellSize: 1
-  cellExemple: {fileID: 0}
   gameOfLifeComputeShader: {fileID: 7200000, guid: f2cbe9d9abab58e4f8df8b7b7ea88576, type: 3}
-  CanRun: 0
-  randomStart: 0
+  renderTexture: {fileID: 8400000, guid: 1117f863b8cb4d746a6ce917a8a0b738, type: 2}
+  CanRun: 1
+  randomStart: 1
 --- !u!1 &867480786
 GameObject:
   m_ObjectHideFlags: 0
