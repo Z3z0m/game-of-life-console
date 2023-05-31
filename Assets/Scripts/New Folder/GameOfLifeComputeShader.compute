@@ -2,6 +2,7 @@
 
 RWTexture2D<bool> grid;
 RWTexture2D<bool> nextGrid;
+RWStructuredBuffer<int> Result;
 
 int width;
 int height;
@@ -36,6 +37,13 @@ void UpdateGrid(uint3 id : SV_DispatchThreadID)
 {
     int x = id.x;
     int y = id.y;
+    
+    float valx = 1;
+    float valy = 0;
+
+
+    Result[id.x] = valx + valy;
+    Result[id.y] = valx + valy;
 
     int liveNeighbors = CountLiveNeighbors(x, y);
     bool isAlive = grid[int2(x, y)];

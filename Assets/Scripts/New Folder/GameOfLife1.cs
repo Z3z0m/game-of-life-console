@@ -18,6 +18,8 @@ public class GameOfLife1 : MonoBehaviour
     public GameObject[,] cells;
     [SerializeField] private RenderTexture renderTexture;
 
+    private int[] resultData;
+
     private float timer, timeLimit = 10f;
     private int kernelUpdateGrid;
     public bool CanRun, randomStart = false;
@@ -36,7 +38,7 @@ public class GameOfLife1 : MonoBehaviour
         if (CanRun && timer <= timeLimit)
         {
             timer += Time.deltaTime;
-            UpdateGrid(); // hhhhh
+            UpdateGPU();
             UpdateCells();
         }
     }
@@ -92,29 +94,66 @@ public class GameOfLife1 : MonoBehaviour
     private void InitializeComputeShader()
     {
         int bufferSize = width * height;
+        resultData = new int[bufferSize];
         ComputeBuffer gridBuffer = new ComputeBuffer(bufferSize, sizeof(float));
         ComputeBuffer nextGridBuffer = new ComputeBuffer(bufferSize, sizeof(float));
+        ComputeBuffer resultBuffer = new ComputeBuffer(bufferSize, sizeof(float));
 
         kernelUpdateGrid = gameOfLifeComputeShader.FindKernel("UpdateGrid");
         gameOfLifeComputeShader.SetInt("width", width);
         gameOfLifeComputeShader.SetInt("height", height);
         gameOfLifeComputeShader.SetBuffer(0, "grid", gridBuffer);
         gameOfLifeComputeShader.SetBuffer(0, "nextGrid", nextGridBuffer);
-
-        //gameOfLifeComputeShader.SetTexture(kernelUpdateGrid, "Result", renderTexture);
+        gameOfLifeComputeShader.SetBuffer(0, "Result", resultBuffer);
+        gameOfLifeComputeShader.SetTexture(kernelUpdateGrid, "Result", renderTexture);
         gameOfLifeComputeShader.Dispatch(0, width / 10, height / 10, 1);
+        
+        resultBuffer.GetData(resultData);
 
-        gridBuffer.Release();
-        nextGridBuffer.Release();
+
+        for (int i =0; i < bufferSize; i++)
+        {
+            int incrementedValue = resultData[i];
+            Debug.Log("Resultado para a célula (" + i + ", " + "): " + incrementedValue);
+        }
 
         gridBuffer.Dispose();
         nextGridBuffer.Dispose();
+        resultBuffer.Dispose();
     }
 
 
-    private void UpdateGrid()
+    void UpdateGPU()
     {
+        int bufferSize = width * height;
+        ComputeBuffer gridBuffer = new ComputeBuffer(bufferSize, sizeof(float));
+        ComputeBuffer nextGridBuffer = new ComputeBuffer(bufferSize, sizeof(float));
+        ComputeBuffer resultBuffer = new ComputeBuffer(bufferSize, sizeof(float));
+
+        kernelUpdateGrid = gameOfLifeComputeShader.FindKernel("UpdateGrid");
+        gameOfLifeComputeShader.SetInt("width", width);
+        gameOfLifeComputeShader.SetInt("height", height);
+        gameOfLifeComputeShader.SetBuffer(0, "grid", gridBuffer);
+        gameOfLifeComputeShader.SetBuffer(0, "nextGrid", nextGridBuffer);
+        gameOfLifeComputeShader.SetBuffer(0, "Result", resultBuffer);
+
+        gameOfLifeComputeShader.SetTexture(kernelUpdateGrid, "Result", renderTexture);
         gameOfLifeComputeShader.Dispatch(0, width / 10, height / 10, 1);
+
+        resultBuffer.GetData(resultData);
+
+        for (int i = 0; i < bufferSize; i++)
+        {
+            int incrementedValue = resultData[i];
+            Debug.Log("Resultado para a célula (" + i + ", " + "): " + incrementedValue);
+        }
+
+
+
+        gridBuffer.Dispose();
+        nextGridBuffer.Dispose();
+        resultBuffer.Dispose();
+
     }
 
     private void UpdateCells()
